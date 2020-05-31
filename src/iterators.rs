@@ -16,8 +16,11 @@ impl <'a> NeighborsIterator<'a> {
                .zip((-1..2).cycle())
                .filter(|&(i,j)| (i != 0 || j != 0))
                .map(|(i,j)| (tx + i, ty + j))
-               .filter(|&(i,j)| i >= 0 && j >= 0)
-               .filter(|&(i,j)| i < board.cols as isize && j < board.rows as isize)
+               .map(|(i,j)| {
+                   let c = board.cols as isize;
+                   let r = board.rows as isize;
+                   ((i + c) % c, (j + r) % r)
+               })
                .map(|(i,j)| (i as usize, j as usize))
                .collect();
 
@@ -65,14 +68,14 @@ mod tests {
     fn test_boundary_iterator() {
         let b = Board::new(10,10);
         assert_eq!(b.neighbors(1,1).count(), 8);
-        assert_eq!(b.neighbors(0,0).count(), 3);
-        assert_eq!(b.neighbors(0,9).count(), 3);
-        assert_eq!(b.neighbors(9,0).count(), 3);
-        assert_eq!(b.neighbors(9,9).count(), 3);
-        assert_eq!(b.neighbors(0,3).count(), 5);
-        assert_eq!(b.neighbors(3,0).count(), 5);
-        assert_eq!(b.neighbors(8,9).count(), 5);
-        assert_eq!(b.neighbors(9,8).count(), 5);
+        assert_eq!(b.neighbors(0,0).count(), 8);
+        assert_eq!(b.neighbors(0,9).count(), 8);
+        assert_eq!(b.neighbors(9,0).count(), 8);
+        assert_eq!(b.neighbors(9,9).count(), 8);
+        assert_eq!(b.neighbors(0,3).count(), 8);
+        assert_eq!(b.neighbors(3,0).count(), 8);
+        assert_eq!(b.neighbors(8,9).count(), 8);
+        assert_eq!(b.neighbors(9,8).count(), 8);
     }
 
     #[test]

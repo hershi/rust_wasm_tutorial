@@ -233,28 +233,4 @@ mod tests {
             assert_eq!(x, false);
         }
     }
-
-    #[test]
-    fn test_boundary_iterator() {
-        let b = Board::new(10,10);
-        assert_eq!(b.neighbors(1,1).count(), 8);
-        assert_eq!(b.neighbors(0,0).count(), 3);
-        assert_eq!(b.neighbors(0,9).count(), 3);
-        assert_eq!(b.neighbors(9,0).count(), 3);
-        assert_eq!(b.neighbors(9,9).count(), 3);
-        assert_eq!(b.neighbors(0,3).count(), 5);
-        assert_eq!(b.neighbors(3,0).count(), 5);
-        assert_eq!(b.neighbors(8,9).count(), 5);
-        assert_eq!(b.neighbors(9,8).count(), 5);
-    }
-
-    #[test]
-    fn test_neighbors_iterator_all_full() {
-
-    }
-
-    #[test]
-    fn test_neighbors_iterator_mixed() {
-
-    }
 }
