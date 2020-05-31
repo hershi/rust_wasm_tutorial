@@ -5,7 +5,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct BoardWrapper {
-    board: Board,
+    board: BoardImpl,
 }
 
 #[wasm_bindgen]
@@ -15,7 +15,7 @@ impl BoardWrapper {
     }
 
     pub fn new(width : usize, height : usize) -> BoardWrapper {
-        let mut board = BoardWrapper { board: Board::new(width, height) };
+        let mut board = BoardWrapper { board: BoardImpl::new(width, height) };
         for i in 0..width * height {
             if i % 2 == 0 || i % 7 == 0 {
                 board.board.grid[i] = true;
@@ -47,17 +47,17 @@ impl BoardWrapper {
 }
 
 #[derive(Debug)]
-pub struct Board {
+pub struct BoardImpl {
     pub grid : Vec<bool>,
     pub cols : usize,
     pub rows : usize,
 }
 
-impl Board {
-    pub fn new(width : usize, height : usize) -> Board {
+impl BoardImpl {
+    pub fn new(width : usize, height : usize) -> BoardImpl {
         if width == 0 || height == 0 { panic!("Invalid board size: Array dimensions must be non-zero {} {}", width, height); }
 
-        Board{grid : vec![false; width * height], cols : width, rows : height}
+        BoardImpl{grid : vec![false; width * height], cols : width, rows : height}
     }
 
     pub fn flip(&mut self, col : usize, row : usize){
@@ -110,7 +110,7 @@ impl Board {
     }
 }
 
-impl fmt::Display for Board {
+impl fmt::Display for BoardImpl {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for y in 0..self.rows {
             for x in 0..self.cols {
@@ -132,7 +132,7 @@ mod tests {
     fn test_basic_creation() {
         let width = 30;
         let height = 27;
-        let b = Board::new(width,height);
+        let b = BoardImpl::new(width,height);
         assert_eq!(b.cols, width);
         assert_eq!(b.rows, height);
         assert_eq!(b.grid.len(), width * height);
@@ -141,13 +141,13 @@ mod tests {
     #[test]
     #[should_panic(expected = "Invalid board size")]
     fn test_empty_board_creation() {
-        let b = Board::new(0,0);
+        let b = BoardImpl::new(0,0);
         println!("{:?}", b);
     }
 
     #[test]
     fn test_one_x_one_creation() {
-        let mut b = Board::new(1,1);
+        let mut b = BoardImpl::new(1,1);
 
         b.set(0, 0, true);
         assert_eq!(b.get(0,0), true);
@@ -159,7 +159,7 @@ mod tests {
     fn test_population() {
         let width = 1999;
         let height = 1000;
-        let mut b = Board::new(width, height);
+        let mut b = BoardImpl::new(width, height);
 
         for point in (0..width).flat_map(|x| iter::repeat(x).take(height)).zip((0..height).cycle()) {
             let x = point.0;
@@ -178,7 +178,7 @@ mod tests {
     fn test_flip() {
         let width = 1999;
         let height = 1000;
-        let mut b = Board::new(width, height);
+        let mut b = BoardImpl::new(width, height);
 
         for point in (0..width).flat_map(|x| iter::repeat(x).take(height)).zip((0..height).cycle()) {
             let x = point.0;
@@ -200,34 +200,34 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_out_of_bounds_col_get() {
-        let b = Board::new(10,10);
+        let b = BoardImpl::new(10,10);
         println!("{:?}", b.get(15, 5));
     }
 
     #[test]
     #[should_panic]
     fn test_out_of_bounds_row_get() {
-        let b = Board::new(10,10);
+        let b = BoardImpl::new(10,10);
         println!("{:?}", b.get(15, 5));
     }
 
     #[test]
     #[should_panic(expected = "col < self.cols")]
     fn test_out_of_bounds_col_set() {
-        let mut b = Board::new(10,10);
+        let mut b = BoardImpl::new(10,10);
         b.set(15, 5, true);
     }
 
     #[test]
     #[should_panic(expected = "col < self.cols")]
     fn test_out_of_bounds_row_set() {
-        let mut b = Board::new(10,10);
+        let mut b = BoardImpl::new(10,10);
         b.set(15, 5, true);
     }
 
     #[test]
     fn test_neighbors_iterator_all_empty() {
-        let b = Board::new(10,10);
+        let b = BoardImpl::new(10,10);
         for x in b.neighbors(1,1) {
             println!("{:?}", x);
             assert_eq!(x, false);

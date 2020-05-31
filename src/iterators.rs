@@ -3,13 +3,13 @@ use std::iter;
 
 #[derive(Debug)]
 pub struct NeighborsIterator<'a> {
-    board : &'a Board,
+    board : &'a BoardImpl,
     points : Vec<(usize,usize)>,
     offset : usize,
 }
 
 impl <'a> NeighborsIterator<'a> {
-    pub fn new(board : &Board, x : usize, y : usize) -> NeighborsIterator {
+    pub fn new(board : &BoardImpl, x : usize, y : usize) -> NeighborsIterator {
         let tx = x as isize;
         let ty = y as isize;
         let points = (-1..2).flat_map(|i| iter::repeat(i).take(3))
@@ -51,7 +51,7 @@ mod tests {
     use std::iter;
     #[test]
     fn test_neighbors_iterator_all_empty() {
-        let b = Board::new(10,10);
+        let b = BoardImpl::new(10,10);
 
         assert!(b.neighbors(1,1).all(|x| x == false));
         assert!(b.neighbors(0,0).all(|x| x == false));
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_boundary_iterator() {
-        let b = Board::new(10,10);
+        let b = BoardImpl::new(10,10);
         assert_eq!(b.neighbors(1,1).count(), 8);
         assert_eq!(b.neighbors(0,0).count(), 8);
         assert_eq!(b.neighbors(0,9).count(), 8);
@@ -82,7 +82,7 @@ mod tests {
     fn test_neighbors_iterator_all_full() {
         let width = 1999;
         let height = 1000;
-        let mut b = Board::new(width, height);
+        let mut b = BoardImpl::new(width, height);
 
         for point in (0..width).flat_map(|x| iter::repeat(x).take(height)).zip((0..height).cycle()) {
             let x = point.0;
@@ -105,7 +105,7 @@ mod tests {
     fn test_neighbors_iterator_mixed() {
         let width = 1999;
         let height = 1000;
-        let mut b = Board::new(width, height);
+        let mut b = BoardImpl::new(width, height);
 
         for point in (0..width).flat_map(|x| iter::repeat(x).take(height)).zip((0..height).cycle()) {
             let x = point.0;
