@@ -1,12 +1,12 @@
 import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
-import { BoardWrapper } from "wasm-game-of-life";
+import { Board } from "wasm-game-of-life";
 
 const CELL_SIZE = 5; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
-const universe = BoardWrapper.new(64,64);
+const universe = Board.new(64,64);
 const width = universe.width();
 const height = universe.height();
 

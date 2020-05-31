@@ -4,18 +4,18 @@ use crate::iterators::NeighborsIterator;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub struct BoardWrapper {
+pub struct Board {
     board: BoardImpl,
 }
 
 #[wasm_bindgen]
-impl BoardWrapper {
+impl Board {
     pub fn foo() -> String {
         "Hi, I'm foo".to_string()
     }
 
-    pub fn new(width : usize, height : usize) -> BoardWrapper {
-        let mut board = BoardWrapper { board: BoardImpl::new(width, height) };
+    pub fn new(width : usize, height : usize) -> Board {
+        let mut board = Board { board: BoardImpl::new(width, height) };
         for i in 0..width * height {
             if i % 2 == 0 || i % 7 == 0 {
                 board.board.grid[i] = true;
