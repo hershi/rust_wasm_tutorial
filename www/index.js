@@ -6,27 +6,37 @@ const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
-const universe = Board.new(64,64);
+const universe = Board.new_empty(64,64);
 const width = universe.width();
 const height = universe.height();
 
+const playPauseButton = document.getElementById("play-pause");
+const randomizeButton = document.getElementById("randomize");
+const clearButton = document.getElementById("clear");
 const canvas = document.getElementById("game-of-life-canvas");
+
 canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
 
 const ctx = canvas.getContext('2d');
 
-var last_call = 0;
+let last_call = 0;
+let animationId = null;
+let delay = 70;
 
 const renderLoop = (timestamp) => {
-  if (timestamp - last_call > 170) {
+  if (timestamp - last_call > delay) {
     last_call = timestamp;
     drawGrid();
     drawCells();
     universe.tick();
   }
 
-  requestAnimationFrame(renderLoop);
+  animationId = requestAnimationFrame(renderLoop);
+};
+
+const isPaused = () => {
+  return animationId === null;
 };
 
 const drawGrid = () => {
@@ -75,5 +85,52 @@ const drawCells = () => {
 
   ctx.stroke();
 };
+
+const play = () => {
+  playPauseButton.textContent = "⏸";
+  renderLoop();
+};
+
+const pause = () => {
+  playPauseButton.textContent = "▶";
+  cancelAnimationFrame(animationId);
+  animationId = null;
+};
+
+randomizeButton.addEventListener("click", event => {
+  universe.randomize();
+  drawGrid();
+  drawCells();
+});
+
+clearButton.addEventListener("click", event => {
+  universe.clear();
+  drawGrid();
+  drawCells();
+});
+
+playPauseButton.addEventListener("click", event => {
+  if (isPaused()) {
+    play();
+  } else {
+    pause();
+  }
+});
+
+canvas.addEventListener("click", event => {
+  const boundingRect = canvas.getBoundingClientRect();
+
+  console.log("bounding rect: " + boundingRect.width + " " + boundingRect.height);
+  console.log("canvas: " + canvas.width + " " + canvas.height);
+  const scaleX = canvas.width / boundingRect.width;
+  const scaleY = canvas.height / boundingRect.height;
+
+  let x = Math.floor((event.clientX - boundingRect.left) / (CELL_SIZE + 1));
+  let y = Math.floor((event.clientY - boundingRect.top) / (CELL_SIZE + 1));
+
+  universe.flip(x,y);
+  drawGrid();
+  drawCells();
+});
 
 requestAnimationFrame(renderLoop);

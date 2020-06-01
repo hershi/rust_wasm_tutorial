@@ -1,7 +1,9 @@
+use js_sys::Math::random;
 use std::fmt;
 use std::iter;
 use crate::iterators::NeighborsIterator;
 use wasm_bindgen::prelude::*;
+use crate::utils::*;
 
 #[wasm_bindgen]
 pub struct Board {
@@ -14,7 +16,13 @@ impl Board {
         "Hi, I'm foo".to_string()
     }
 
+    pub fn new_empty(width: usize, height: usize) -> Board {
+        set_panic_hook();
+        Board { board: BoardImpl::new(width, height) }
+    }
+
     pub fn new(width : usize, height : usize) -> Board {
+        set_panic_hook();
         let mut board = Board { board: BoardImpl::new(width, height) };
         for i in 0..width * height {
             if i % 2 == 0 || i % 7 == 0 {
@@ -23,6 +31,16 @@ impl Board {
         }
 
         board
+    }
+
+    pub fn clear(&mut self) {
+        self.board = BoardImpl::new(self.board.cols, self.board.rows);
+    }
+
+    pub fn randomize(&mut self) {
+        for i in 0..self.board.cols * self.board.rows {
+            self.board.grid[i] = random() > 0.5;
+        }
     }
 
     pub fn tick(&mut self) {
@@ -43,6 +61,23 @@ impl Board {
 
     pub fn cells(&self) -> *const bool {
         self.board.grid.as_ptr()
+    }
+
+    pub fn flip(&mut self, x: usize, y:usize) {
+        log!("flip : {},{}", x, y);
+        self.board.flip(x,y);
+    }
+}
+
+impl Board {
+    pub fn get_cells(&self) -> &Vec<bool> {
+        &self.board.grid
+    }
+
+    pub fn set_cells(&mut self, coordinates: &[(usize,usize)]) {
+        for &(x,y) in coordinates.iter() {
+            self.board.set(x,y,true);
+        }
     }
 }
 
